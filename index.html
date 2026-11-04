@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي السلاسل النصية | الصف العاشر</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 30%, #e0e7ff 70%, #ede9fe 100%);
+            min-height: 100vh;
+        }
+
+        /* حركات مخصصة */
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+        @keyframes pop-in {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .animate-float { animation: float-slow 4s ease-in-out infinite; }
+        .animate-pop { animation: pop-in 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .animate-shake { animation: shake 0.4s ease-in-out; }
+
+        /* تدرجات وظلال زاهية */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(14px);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 15px 35px -5px rgba(168, 85, 247, 0.15), 0 8px 16px -6px rgba(236, 72, 153, 0.1);
+        }
+
+        .btn-gradient-primary {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            box-shadow: 0 6px 20px -3px rgba(236, 72, 153, 0.4);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-gradient-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px -3px rgba(139, 92, 246, 0.5);
+        }
+
+        .code-box {
+            font-family: 'Courier New', Courier, monospace;
+            direction: ltr;
+            text-align: left;
+        }
+
+        /* تحسين التمرير ومربعات الاختيار */
+        .match-card {
+            transition: all 0.25s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+        .match-card:hover {
+            transform: translateY(-2px);
+        }
+        .match-selected {
+            border-color: #8b5cf6 !important;
+            background-color: #f3e8ff !important;
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.35);
+        }
+        .match-paired {
+            border-color: #10b981 !important;
+            background-color: #d1fae5 !important;
+            color: #065f46 !important;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800 antialiased selection:bg-pink-300">
+
+    <!-- خلفية تفاعلية برسوم متحركة خفيفة -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-pink-300/30 blur-3xl"></div>
+        <div class="absolute top-1/2 -left-20 w-96 h-96 rounded-full bg-purple-300/30 blur-3xl"></div>
+        <div class="absolute -bottom-20 right-1/3 w-80 h-80 rounded-full bg-cyan-300/30 blur-3xl"></div>
+    </div>
+
+    <!-- ترويسة اللعبة -->
+    <header class="relative z-10 w-full max-w-4xl mx-auto px-4 pt-6 pb-2">
+        <div class="glass-card rounded-3xl p-4 md:p-5 flex flex-wrap items-center justify-between gap-4">
+            <!-- الشعار والمعلومات -->
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-pink-500/30 animate-float">
+                    💻
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-extrabold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                        مغامرة السلاسل النصية Strings
+                    </h1>
+                    <p class="text-xs md:text-sm text-purple-700/80 font-bold flex items-center gap-1">
+                        <span>الصف العاشر</span> • <span>تقنية المعلومات (بايثون 🐍)</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- بطاقة النقاط والمرحلة -->
+            <div class="flex items-center gap-3 mr-auto sm:mr-0">
+                <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl px-4 py-1.5 flex items-center gap-2 shadow-sm">
+                    <span class="text-amber-500 text-lg">⭐</span>
+                    <div class="text-right">
+                        <div class="text-[10px] text-amber-700 font-bold leading-none">النقاط</div>
+                        <div id="scoreDisplay" class="text-lg font-black text-amber-600 leading-tight">0</div>
+                    </div>
+                </div>
+
+                <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl px-3 py-1.5 flex items-center gap-1.5">
+                    <span id="sectionBadge" class="text-xs font-bold text-purple-700 bg-purple-200 px-2 py-0.5 rounded-lg">
+                        المقدمة
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- شريط التقدم بين الأقسام الثلاثة -->
+        <div class="mt-4 glass-card rounded-2xl p-2.5 flex items-center justify-between gap-2 text-xs md:text-sm font-bold">
+            <div id="stepIndicator1" class="flex-1 py-1.5 px-2 rounded-xl text-center transition-all bg-purple-600 text-white shadow-md">
+                ١. اختيار من متعدد
+            </div>
+            <div id="stepIndicator2" class="flex-1 py-1.5 px-2 rounded-xl text-center transition-all bg-white/70 text-slate-500">
+                ٢. صِل العبارات
+            </div>
+            <div id="stepIndicator3" class="flex-1 py-1.5 px-2 rounded-xl text-center transition-all bg-white/70 text-slate-500">
+                ٣. صح أو خطأ
+            </div>
+        </div>
+    </header>
+
+    <!-- الحاوية الرئيسية للتحديات -->
+    <main class="relative z-10 flex-1 w-full max-w-4xl mx-auto px-4 py-4 flex flex-col justify-center">
+
+        <!-- ======================= شاشة البداية ======================= -->
+        <section id="startScreen" class="glass-card rounded-3xl p-6 md:p-10 text-center animate-pop">
+            <div class="inline-block p-4 rounded-full bg-gradient-to-tr from-pink-100 to-purple-100 mb-4 border border-pink-200">
+                <div class="w-20 h-20 md:w-24 md:h-24 mx-auto flex items-center justify-center text-5xl md:text-6xl animate-float">
+                    ✨🌸
+                </div>
+            </div>
+            
+            <h2 class="text-2xl md:text-3xl font-black text-slate-800 mb-3">
+                أهلاً بكِ يا مبدعة البرمجة في الصف العاشر! 
+            </h2>
+            <p class="text-slate-600 text-sm md:text-base max-w-xl mx-auto leading-relaxed mb-6 font-semibold">
+                هل أنتِ مستعدة لاختبار مهاراتكِ في درس <span class="text-purple-600 font-bold">السلاسل النصية (Strings)</span> في لغة بايثون؟
+                تنتظركِ لعبة تفاعلية من <span class="text-pink-600 font-bold">3 مراحل ممتعة</span>، كل مرحلة تحتوي على 3 تحديات شيّقة مع تغذية راجعة توضيحية.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-2xl mx-auto mb-8 text-right text-xs md:text-sm">
+                <div class="bg-pink-50 border border-pink-200 rounded-2xl p-3 flex items-center gap-3">
+                    <span class="text-2xl">🎯</span>
+                    <div>
+                        <span class="font-bold text-pink-700 block">الجزء الأول (3 أسئلة)</span>
+                        <span class="text-slate-600">اختيار من متعدد حول الفهرسة والدوال</span>
+                    </div>
+                </div>
+                <div class="bg-purple-50 border border-purple-200 rounded-2xl p-3 flex items-center gap-3">
+                    <span class="text-2xl">🔗</span>
+                    <div>
+                        <span class="font-bold text-purple-700 block">الجزء الثاني (3 بطاقات)</span>
+                        <span class="text-slate-600">صِل العبارة بما يناسبها من المفاهيم</span>
+                    </div>
+                </div>
+                <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-3 flex items-center gap-3">
+                    <span class="text-2xl">💡</span>
+                    <div>
+                        <span class="font-bold text-indigo-700 block">الجزء الثالث (3 عبارات)</span>
+                        <span class="text-slate-600">أسئلة صح أم خطأ لتأكيد المفاهيم</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="btn-gradient-primary text-white font-extrabold text-lg px-10 py-4 rounded-2xl inline-flex items-center gap-3">
+                <span>انطلقي للتحدي والتعلم!</span>
+                <span class="text-xl">🚀</span>
+            </button>
+        </section>
+
+        <!-- ======================= الجزء الأول: اختيار من متعدد ======================= -->
+        <section id="section1" class="hidden glass-card rounded-3xl p-6 md:p-8 animate-pop">
+            <div class="flex items-center justify-between mb-4 border-b border-purple-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-700 font-extrabold text-xs">
+                        المرحلة الأولى: الاختيار من متعدد
+                    </span>
+                    <span id="mcqProgressText" class="text-xs font-bold text-slate-500">
+                        السؤال 1 من 3
+                    </span>
+                </div>
+                <div class="text-sm font-black text-purple-600 flex items-center gap-1">
+                    <span>نقاط السؤال: +10</span>
+                </div>
+            </div>
+
+            <!-- محتوى السؤال -->
+            <div id="mcqContainer">
+                <h3 id="mcqQuestion" class="text-lg md:text-xl font-bold text-slate-800 mb-3 leading-relaxed">
+                    <!-- نص السؤال يدرج هنا -->
+                </h3>
+
+                <!-- نافذة الكود التوضيحي إن وجد -->
+                <div id="mcqCodeBlock" class="mb-5 p-4 rounded-2xl bg-slate-900 text-green-400 code-box text-sm md:text-base border border-slate-700 shadow-inner hidden">
+                    <div class="text-slate-500 text-xs select-none mb-1">// Python Code Snippet</div>
+                    <code id="mcqCodeText"></code>
+                </div>
+
+                <!-- خيارات الإجابة -->
+                <div id="mcqOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    <!-- أزرار الخيارات تدرج هنا ديناميكياً -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= الجزء الثاني: صِل العبارة بما يناسبها ======================= -->
+        <section id="section2" class="hidden glass-card rounded-3xl p-6 md:p-8 animate-pop">
+            <div class="flex items-center justify-between mb-4 border-b border-purple-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-xl bg-purple-100 text-purple-700 font-extrabold text-xs">
+                        المرحلة الثانية: صِل العبارة بما يناسبها
+                    </span>
+                    <span id="matchingProgressText" class="text-xs font-bold text-slate-500">
+                        طابقي (3) عناصر برمجية
+                    </span>
+                </div>
+                <div class="text-sm font-black text-purple-600">
+                    <span>نقاط كل ربط صحيح: +10</span>
+                </div>
+            </div>
+
+            <div class="bg-purple-50/70 border border-purple-200 rounded-2xl p-3.5 mb-5 flex items-center gap-3 text-xs md:text-sm text-purple-800">
+                <span class="text-xl">👉</span>
+                <span><strong>طريقة اللعب:</strong> اضغطي على بطاقة من العمود الأيمن (الأسلوب أو المعامل)، ثم اضغطي على ما يناسب وظيفتها في العمود الأيسر.</span>
+            </div>
+
+            <!-- شبكة التوصيل ذات العمودين -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <!-- العمود الأيمن: المفاهيم -->
+                <div>
+                    <h4 class="text-sm font-extrabold text-purple-900 mb-3 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-purple-200 text-purple-800 inline-flex items-center justify-center text-xs">A</span>
+                        الأسلوب / المعامل البرمجي
+                    </h4>
+                    <div id="matchingLeftCol" class="space-y-3">
+                        <!-- تضاف البطاقات ديناميكياً -->
+                    </div>
+                </div>
+
+                <!-- العمود الأيسر: الوظائف والتفسير -->
+                <div>
+                    <h4 class="text-sm font-extrabold text-pink-900 mb-3 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-pink-200 text-pink-800 inline-flex items-center justify-center text-xs">B</span>
+                        الوظيفة والتأثير البرمجي
+                    </h4>
+                    <div id="matchingRightCol" class="space-y-3">
+                        <!-- تضاف البطاقات ديناميكياً -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- زر الانتقال للمرحلة التالية بعد إكمال التوصيل -->
+            <div id="matchingNextContainer" class="mt-6 text-center hidden">
+                <button onclick="goToSection3()" class="btn-gradient-primary text-white font-extrabold px-8 py-3 rounded-2xl inline-flex items-center gap-2 shadow-lg">
+                    <span>أحسنتِ! انتقلي للمرحلة الثالثة</span>
+                    <span>✨</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ======================= الجزء الثالث: صح أو خطأ ======================= -->
+        <section id="section3" class="hidden glass-card rounded-3xl p-6 md:p-8 animate-pop">
+            <div class="flex items-center justify-between mb-4 border-b border-purple-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-xl bg-indigo-100 text-indigo-700 font-extrabold text-xs">
+                        المرحلة الثالثة: صح أم خطأ
+                    </span>
+                    <span id="tfProgressText" class="text-xs font-bold text-slate-500">
+                        العبارة 1 من 3
+                    </span>
+                </div>
+                <div class="text-sm font-black text-purple-600">
+                    <span>نقاط العبارة: +10</span>
+                </div>
+            </div>
+
+            <div id="tfContainer">
+                <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200/80 rounded-2xl p-6 mb-6 text-center">
+                    <div class="w-14 h-14 mx-auto rounded-full bg-white shadow-md flex items-center justify-center text-2xl mb-3">
+                        💡
+                    </div>
+                    <p id="tfQuestionText" class="text-lg md:text-xl font-bold text-slate-800 leading-relaxed">
+                        <!-- نص العبارة يدرج هنا -->
+                    </p>
+                </div>
+
+                <!-- أزرار صح و خطأ -->
+                <div class="grid grid-cols-2 gap-4 max-w-md mx-auto mb-4">
+                    <button onclick="handleTFAnswer(true)" class="group p-5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-300 text-emerald-800 font-black text-lg md:text-xl flex flex-col items-center gap-2 transition-all shadow-sm hover:scale-105 active:scale-95">
+                        <span class="w-12 h-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-2xl group-hover:rotate-6 transition-transform">
+                            ✓
+                        </span>
+                        <span>صحيحة</span>
+                    </button>
+
+                    <button onclick="handleTFAnswer(false)" class="group p-5 rounded-2xl bg-rose-50 hover:bg-rose-100 border-2 border-rose-300 text-rose-800 font-black text-lg md:text-xl flex flex-col items-center gap-2 transition-all shadow-sm hover:scale-105 active:scale-95">
+                        <span class="w-12 h-12 rounded-xl bg-rose-500 text-white flex items-center justify-center text-2xl group-hover:-rotate-6 transition-transform">
+                            ✗
+                        </span>
+                        <span>خاطئة</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================= نافذة التغذية الراجعة الفورية (Modal) ======================= -->
+        <div id="feedbackModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="glass-card bg-white rounded-3xl max-w-lg w-full p-6 text-center animate-pop border-4 shadow-2xl relative overflow-hidden" id="modalCard">
+                <!-- شريط زخرفي علوي -->
+                <div id="modalTopBar" class="h-3 w-full absolute top-0 left-0 bg-gradient-to-r from-pink-500 to-purple-600"></div>
+
+                <div id="modalIcon" class="w-20 h-20 rounded-2xl mx-auto flex items-center justify-center text-4xl mb-3 shadow-lg">
+                    <!-- أيقونة النتيجة -->
+                </div>
+
+                <h3 id="modalTitle" class="text-2xl font-black mb-2">
+                    <!-- عنوان التغذية -->
+                </h3>
+
+                <div id="modalExplanation" class="text-slate-700 text-sm md:text-base leading-relaxed bg-purple-50/80 border border-purple-200 rounded-2xl p-4 mb-6 text-right font-medium">
+                    <!-- الشرح التعليمي المأخوذ من الكتاب -->
+                </div>
+
+                <button id="modalActionBtn" onclick="closeFeedbackModal()" class="btn-gradient-primary text-white font-extrabold text-base px-8 py-3 rounded-2xl w-full">
+                    متابعة التحدي 🌟
+                </button>
+            </div>
+        </div>
+
+        <!-- ======================= شاشة النتيجة النهائية ======================= -->
+        <section id="resultsScreen" class="hidden glass-card rounded-3xl p-6 md:p-10 text-center animate-pop relative overflow-hidden">
+            <canvas id="confettiCanvas" class="absolute inset-0 pointer-events-none w-full h-full z-0"></canvas>
+
+            <div class="relative z-10">
+                <div class="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-pink-500 flex items-center justify-center text-5xl shadow-xl shadow-pink-500/20 mb-4 animate-float">
+                    🏆
+                </div>
+
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800 mb-2">
+                    مبارك الإنجاز يا نجمة الحوسبة والبرمجة! 🌸
+                </h2>
+                <p class="text-purple-700 font-bold text-sm md:text-base mb-6">
+                    أتممتِ بنجاح جميع محطات درس السلاسل النصية (Strings)
+                </p>
+
+                <!-- بطاقة تفصيل النتيجة -->
+                <div class="max-w-md mx-auto bg-white/90 border-2 border-purple-200 rounded-3xl p-6 mb-6 shadow-sm">
+                    <div class="text-slate-500 text-xs font-bold mb-1">النتيجة النهائية الكلية</div>
+                    <div class="text-5xl font-black bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                        <span id="finalScoreDisplay">90</span> / 90
+                    </div>
+
+                    <div id="appreciationBadge" class="inline-block px-4 py-2 rounded-xl text-sm font-extrabold mb-4">
+                        <!-- وسام التقدير يدرج هنا -->
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 text-center border-t border-purple-100 pt-4 text-xs font-bold text-slate-600">
+                        <div class="bg-pink-50 p-2 rounded-xl">
+                            <span class="block text-pink-600 text-lg">3/3</span>
+                            <span>اختيار من متعدد</span>
+                        </div>
+                        <div class="bg-purple-50 p-2 rounded-xl">
+                            <span class="block text-purple-600 text-lg">3/3</span>
+                            <span>صل العبارات</span>
+                        </div>
+                        <div class="bg-indigo-50 p-2 rounded-xl">
+                            <span class="block text-indigo-600 text-lg">3/3</span>
+                            <span>صح أو خطأ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    <button onclick="restartGame()" class="btn-gradient-primary text-white font-extrabold px-8 py-3.5 rounded-2xl flex items-center gap-2">
+                        <span>إعادة التحدي للتميز</span>
+                        <span>🔄</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- تذييل الصفحة -->
+    <footer class="relative z-10 w-full max-w-4xl mx-auto px-4 py-4 text-center text-xs text-purple-900/70 font-bold">
+        مادة تقنية المعلومات • الصف العاشر • الوحدة الثانية: المعالجة الرقمية (السلاسل النصية في لغة Python)
+    </footer>
+
+    <!-- جافاسكريبت اللعبة والمؤثرات الصوتية والتعليمية -->
+    <script>
+        /* ==================== محرك الصوتيات التوليدي (Web Audio API) ==================== */
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+
+                if (type === 'correct') {
+                    // نغمة نجاح ثلاثية مبهجة (F5 -> A5 -> C6)
+                    const freqs = [698.46, 880.00, 1046.50];
+                    freqs.forEach((f, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(f, now + idx * 0.08);
+
+                        gain.gain.setValueAtTime(0, now + idx * 0.08);
+                        gain.gain.linearRampToValueAtTime(0.2, now + idx * 0.08 + 0.02);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
+
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+
+                        osc.start(now + idx * 0.08);
+                        osc.stop(now + idx * 0.08 + 0.35);
+                    });
+                } else if (type === 'wrong') {
+                    // نغمة خطأ لطيفة وهادئة
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(260, now);
+                    osc.frequency.exponentialRampToValueAtTime(180, now + 0.3);
+
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'click') {
+                    // صوت نقرة ناعمة
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                } else if (type === 'win') {
+                    // لحن احتفالي نهائي
+                    const melody = [523.25, 659.25, 783.99, 1046.50, 880.00, 1046.50];
+                    melody.forEach((f, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(f, now + idx * 0.12);
+                        gain.gain.setValueAtTime(0.2, now + idx * 0.12);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.4);
+
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+
+                        osc.start(now + idx * 0.12);
+                        osc.stop(now + idx * 0.12 + 0.45);
+                    });
+                }
+            } catch (e) {
+                // في حال عدم دعم المتصفح لا تتوقف اللعبة
+                console.log("Audio not supported or waiting for user interaction", e);
+            }
+        }
+
+        /* ==================== بنك الأسئلة والمحتوى التعليمي ==================== */
+        
+        // الجزء الأول: اختيار من متعدد (3 أسئلة مستمدة نصاً من الكتاب)
+        const mcqQuestions = [
+            {
+                question: "ما هي مخرجات المقطع البرمجي التالي عند تطبيق الفهرسة الأمامية (Indexing) على السلسلة؟",
+                code: "var_x = 'Free Kuwait'\nprint(var_x[0])",
+                options: [
+                    { text: "F", isCorrect: true },
+                    { text: "r", isCorrect: false },
+                    { text: "Free", isCorrect: false },
+                    { text: "0", isCorrect: false }
+                ],
+                explanation: "تبدأ عملية الفهرسة (Indexing) في لغة بايثون دائماً من الرقم صفر (0) من جهة اليسار، لذلك الحرف ذو الفهرس 0 هو أول حرف 'F'."
+            },
+            {
+                question: "أي الأساليب المدمجة (Built-in Methods) التالية يُستخدم لتحويل الحرف الأول فقط إلى حرف كبير (Capital Letter) وبقية الأحرف إلى صغيرة؟",
+                code: "var_x = 'hello, cybersecurity!'\nprint(var_x.????()) # Output: Hello, cybersecurity!",
+                options: [
+                    { text: "upper()", isCorrect: false },
+                    { text: "capitalize()", isCorrect: true },
+                    { text: "lower()", isCorrect: false },
+                    { text: "center()", isCorrect: false }
+                ],
+                explanation: "الأسلوب capitalize() يحول الحرف الأول فقط إلى كبير وبقية الأحرف إلى صغيرة، بينما upper() يحول كافة أحرف السلسلة إلى كبيرة."
+            },
+            {
+                question: "ما هي الدالة المدمجة التي نستخدمها في بايثون لحساب الطول الإجمالي وعدد خانات وأحرف السلسلة النصية؟",
+                code: "var_x = 'Free Kuwait'\nprint(???(var_x)) # Output: 11",
+                options: [
+                    { text: "len()", isCorrect: true },
+                    { text: "find()", isCorrect: false },
+                    { text: "count()", isCorrect: false },
+                    { text: "replace()", isCorrect: false }
+                ],
+                explanation: "دالة len() (اختصاراً لـ Length) هي الدالة المدمجة المخصصة لمعرفة عدد خانات وعناصر السلسلة النصية بما في ذلك المسافات."
+            }
+        ];
+
+        // الجزء الثاني: صِل العبارة بما يناسبها (3 أزواج مطابقة من الكتاب)
+        const matchingPairs = [
+            {
+                id: 1,
+                term: "المعامل (+)",
+                sub: "الربط (Concatenation)",
+                desc: "يُستخدم لربط ودمج سلسلتين نصيتين أو أكثر معاً لتكوين سلسلة واحدة جديدة.",
+                feedback: "رائعة! المعامل (+) يدمج النصوص معاً، مثل: 'Liberation' + 'Day' لإنتاج سلسلة مدمجة."
+            },
+            {
+                id: 2,
+                term: "دالة replace()",
+                sub: "الاستبدال النصي",
+                desc: "تُستخدم لاستبدال نص قديم بنص جديد داخل السلسلة النصية.",
+                feedback: "إجابة دقيقة! دالة replace(old, new) تبحث عن النص وتستبدله بالقيمة الجديدة المطلوبة."
+            },
+            {
+                id: 3,
+                term: "دالة find()",
+                sub: "البحث عن الفهرس",
+                desc: "تُرجع رقم فهرس أول ظهور لسلسلة فرعية، وتُرجع (1-) إذا لم يتم العثور عليها.",
+                feedback: "مبدعة! دالة find() تعيد موقع أول ظهور للحرف أو الكلمة، وإذا لم تجدها ترجع -1."
+            }
+        ];
+
+        // الجزء الثالث: صح أو خطأ (3 أسئلة من مفاهيم الكتاب)
+        const tfQuestions = [
+            {
+                statement: "تُعد السلاسل النصية في لغة بايثون غير قابلة للتغيير (Immutable)، لذا فإن العمليات عليها لا تؤثر على السلسلة الأصلية بل تُنتج نسخة معدلة جديدة.",
+                isCorrect: true,
+                explanation: "عبارة صحيحة تماماً! السلاسل النصية كائنات Immutable، أي أن النص الأصلي يبقى ثابتاً في الذاكرة وأي عملية تنتج نسخة جديدة."
+            },
+            {
+                statement: "تبدأ عملية الفهرسة بترتيب عكسي من نهاية السلسلة النصية برقم صفر (0).",
+                isCorrect: false,
+                explanation: "العبارة خاطئة! تبدأ الفهرسة بترتيب عكسي من نهاية السلسلة بالرقم (-1) ثم (-2) وهكذا، بينما (0) يبدأ من البداية."
+            },
+            {
+                statement: "تُستخدم التعليمة f-string لكتابة النصوص مع المتغيرات، بحيث يسبق النص حرف f وتوضع المتغيرات داخل أقواس معقوفة { }.",
+                isCorrect: true,
+                explanation: "عبارة صحيحة! تقنية f-strings توفر طريقة سهلة وعصرية لدمج المتغيرات داخل النصوص مثل: f'Name: {student_name}'."
+            }
+        ];
+
+        /* ==================== حالة اللعبة (State Management) ==================== */
+        let gameState = {
+            score: 0,
+            currentSection: 0, // 0: Start, 1: MCQ, 2: Matching, 3: TF, 4: Results
+            mcqIndex: 0,
+            matchingSelectedLeft: null,
+            matchingMatchedCount: 0,
+            tfIndex: 0,
+            onModalClose: null
+        };
+
+        /* ==================== دوال التحكم وسير اللعبة ==================== */
+
+        function updateScore(points) {
+            gameState.score += points;
+            document.getElementById('scoreDisplay').innerText = gameState.score;
+        }
+
+        function setStepIndicator(activeStep) {
+            const steps = [
+                document.getElementById('stepIndicator1'),
+                document.getElementById('stepIndicator2'),
+                document.getElementById('stepIndicator3')
+            ];
+
+            steps.forEach((el, index) => {
+                const stepNum = index + 1;
+                if (stepNum === activeStep) {
+                    el.className = "flex-1 py-1.5 px-2 rounded-xl text-center transition-all bg-gradient-to-r from-pink-500 to-purple-600 text-white font-extrabold shadow-md scale-105";
+                } else if (stepNum < activeStep) {
+                    el.className = "flex-1 py-1.5 px-2 rounded-xl text-center transition-all bg-emerald-100 text-emerald-800 font-bold border border-emerald-300";
+                    el.innerHTML = `✓ المرحلة ${stepNum}`;
+                } else {
+                    el.className = "flex-1 py-1.5 px-2 rounded-xl text-center transition-all bg-white/70 text-slate-500 font-semibold";
+                }
+            });
+        }
+
+        function hideAllScreens() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('section1').classList.add('hidden');
+            document.getElementById('section2').classList.add('hidden');
+            document.getElementById('section3').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.add('hidden');
+        }
+
+        function startGame() {
+            playSound('click');
+            hideAllScreens();
+            gameState.currentSection = 1;
+            gameState.mcqIndex = 0;
+            setStepIndicator(1);
+            document.getElementById('sectionBadge').innerText = "المرحلة الأولى";
+            document.getElementById('section1').classList.remove('hidden');
+            renderMCQQuestion();
+        }
+
+        /* ==================== منطق الجزء الأول: MCQ ==================== */
+
+        function renderMCQQuestion() {
+            const q = mcqQuestions[gameState.mcqIndex];
+            document.getElementById('mcqProgressText').innerText = `السؤال ${gameState.mcqIndex + 1} من 3`;
+            document.getElementById('mcqQuestion').innerText = q.question;
+
+            const codeBlock = document.getElementById('mcqCodeBlock');
+            const codeText = document.getElementById('mcqCodeText');
+            if (q.code) {
+                codeText.innerText = q.code;
+                codeBlock.classList.remove('hidden');
+            } else {
+                codeBlock.classList.add('hidden');
+            }
+
+            const optionsContainer = document.getElementById('mcqOptions');
+            optionsContainer.innerHTML = '';
+
+            // خلط الخيارات عشوائياً لتحفيز التفكير
+            const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+
+            shuffled.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 text-right rounded-2xl bg-white hover:bg-purple-50/80 border-2 border-purple-200/90 text-slate-800 font-bold text-sm md:text-base flex items-center justify-between transition-all shadow-sm hover:scale-[1.01] active:scale-[0.98]";
+                btn.innerHTML = `
+                    <span class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-black">${idx + 1}</span>
+                        <span class="font-mono">${opt.text}</span>
+                    </span>
+                    <span class="text-slate-400">👈</span>
+                `;
+                btn.onclick = () => handleMCQAnswer(opt.isCorrect, q.explanation);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleMCQAnswer(isCorrect, explanation) {
+            if (isCorrect) {
+                playSound('correct');
+                updateScore(10);
+                showFeedbackModal(true, "إجابة ممتازة وذكية! 👏", explanation, () => {
+                    gameState.mcqIndex++;
+                    if (gameState.mcqIndex < mcqQuestions.length) {
+                        renderMCQQuestion();
+                    } else {
+                        goToSection2();
+                    }
+                });
+            } else {
+                playSound('wrong');
+                showFeedbackModal(false, "حاولي ثانية يا ذكية! 🌸", explanation, null);
+            }
+        }
+
+        /* ==================== منطق الجزء الثاني: Matching ==================== */
+
+        function goToSection2() {
+            hideAllScreens();
+            gameState.currentSection = 2;
+            gameState.matchingSelectedLeft = null;
+            gameState.matchingMatchedCount = 0;
+            setStepIndicator(2);
+            document.getElementById('sectionBadge').innerText = "المرحلة الثانية";
+            document.getElementById('section2').classList.remove('hidden');
+            initMatchingSection();
+        }
+
+        function initMatchingSection() {
+            const leftCol = document.getElementById('matchingLeftCol');
+            const rightCol = document.getElementById('matchingRightCol');
+            document.getElementById('matchingNextContainer').classList.add('hidden');
+
+            leftCol.innerHTML = '';
+            rightCol.innerHTML = '';
+
+            // ترتيب عشوائي للعمودين
+            const leftItems = [...matchingPairs].sort(() => Math.random() - 0.5);
+            const rightItems = [...matchingPairs].sort(() => Math.random() - 0.5);
+
+            leftItems.forEach(item => {
+                const card = document.createElement('div');
+                card.id = `left-${item.id}`;
+                card.className = "match-card p-4 rounded-2xl bg-white border-2 border-purple-200 shadow-sm flex items-center justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="font-bold text-slate-800 text-base font-mono">${item.term}</div>
+                        <div class="text-xs text-purple-600 font-semibold">${item.sub}</div>
+                    </div>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-lg font-bold">اختاري</span>
+                `;
+                card.onclick = () => onSelectLeftMatch(item.id);
+                leftCol.appendChild(card);
+            });
+
+            rightItems.forEach(item => {
+                const card = document.createElement('div');
+                card.id = `right-${item.id}`;
+                card.className = "match-card p-4 rounded-2xl bg-white border-2 border-pink-200 shadow-sm flex items-center justify-between";
+                card.innerHTML = `
+                    <div class="text-sm font-semibold text-slate-700 leading-relaxed">${item.desc}</div>
+                    <span class="text-pink-400 mr-2">🎯</span>
+                `;
+                card.onclick = () => onSelectRightMatch(item.id);
+                rightCol.appendChild(card);
+            });
+        }
+
+        function onSelectLeftMatch(id) {
+            playSound('click');
+            // إلغاء تحديد السابق
+            if (gameState.matchingSelectedLeft) {
+                const prev = document.getElementById(`left-${gameState.matchingSelectedLeft}`);
+                if (prev) prev.classList.remove('match-selected');
+            }
+
+            gameState.matchingSelectedLeft = id;
+            const current = document.getElementById(`left-${id}`);
+            if (current) current.classList.add('match-selected');
+        }
+
+        function onSelectRightMatch(id) {
+            if (!gameState.matchingSelectedLeft) {
+                // تنبيه لاختيار العنصر الأيمن أولاً
+                playSound('wrong');
+                showFeedbackModal(false, "خطوة تمهيدية 💡", "يرجى أولاً الضغط على الأسلوب أو المعامل في العمود الأيمن (A)، ثم اختيار التفسير المقابل له.", null);
+                return;
+            }
+
+            const leftCard = document.getElementById(`left-${gameState.matchingSelectedLeft}`);
+            const rightCard = document.getElementById(`right-${id}`);
+
+            if (gameState.matchingSelectedLeft === id) {
+                // مطابقة صحيحة!
+                playSound('correct');
+                updateScore(10);
+                gameState.matchingMatchedCount++;
+
+                leftCard.classList.remove('match-selected');
+                leftCard.classList.add('match-paired');
+                rightCard.classList.add('match-paired');
+
+                const matchedData = matchingPairs.find(m => m.id === id);
+                showFeedbackModal(true, "توصيل صحيح ومتقن! 🌟", matchedData.feedback, () => {
+                    gameState.matchingSelectedLeft = null;
+                    if (gameState.matchingMatchedCount === matchingPairs.length) {
+                        document.getElementById('matchingNextContainer').classList.remove('hidden');
+                    }
+                });
+
+            } else {
+                // مطابقة غير صحيحة
+                playSound('wrong');
+                leftCard.classList.add('animate-shake');
+                rightCard.classList.add('animate-shake');
+                setTimeout(() => {
+                    leftCard.classList.remove('animate-shake');
+                    rightCard.classList.remove('animate-shake');
+                }, 400);
+
+                showFeedbackModal(false, "ليست الإجابة المطابقة! 🔍", "تأكدي من قراءة تعريف الوظيفة جيداً واسترجاع ما ورد في الكتاب المدرسي.", null);
+            }
+        }
+
+        /* ==================== منطق الجزء الثالث: True/False ==================== */
+
+        function goToSection3() {
+            playSound('click');
+            hideAllScreens();
+            gameState.currentSection = 3;
+            gameState.tfIndex = 0;
+            setStepIndicator(3);
+            document.getElementById('sectionBadge').innerText = "المرحلة الثالثة";
+            document.getElementById('section3').classList.remove('hidden');
+            renderTFQuestion();
+        }
+
+        function renderTFQuestion() {
+            const current = tfQuestions[gameState.tfIndex];
+            document.getElementById('tfProgressText').innerText = `العبارة ${gameState.tfIndex + 1} من 3`;
+            document.getElementById('tfQuestionText').innerText = current.statement;
+        }
+
+        function handleTFAnswer(userChoice) {
+            const current = tfQuestions[gameState.tfIndex];
+            const isCorrect = (userChoice === current.isCorrect);
+
+            if (isCorrect) {
+                playSound('correct');
+                updateScore(10);
+                showFeedbackModal(true, "رائعة يا نجمة بايثون! ⭐", current.explanation, () => {
+                    gameState.tfIndex++;
+                    if (gameState.tfIndex < tfQuestions.length) {
+                        renderTFQuestion();
+                    } else {
+                        showResultsScreen();
+                    }
+                });
+            } else {
+                playSound('wrong');
+                showFeedbackModal(false, "انتبهي لهذه النقطة البرمجية! 💡", current.explanation, null);
+            }
+        }
+
+        /* ==================== شاشة النتيجة النهائية ==================== */
+
+        function showResultsScreen() {
+            hideAllScreens();
+            gameState.currentSection = 4;
+            document.getElementById('sectionBadge').innerText = "لوحة الشرف";
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            document.getElementById('finalScoreDisplay').innerText = gameState.score;
+
+            // وسام التقدير بحسب النتيجة
+            const badge = document.getElementById('appreciationBadge');
+            if (gameState.score >= 80) {
+                badge.className = "inline-block px-5 py-2.5 rounded-2xl text-sm font-black bg-emerald-100 text-emerald-800 border border-emerald-300";
+                badge.innerHTML = "🎖️ رتبة: خبيرة السلاسل النصية المتميزة (درجة امتياز)";
+            } else if (gameState.score >= 60) {
+                badge.className = "inline-block px-5 py-2.5 rounded-2xl text-sm font-black bg-blue-100 text-blue-800 border border-blue-300";
+                badge.innerHTML = "🌟 رتبة: مبرمجة واعدة ومبدعة (درجة جيد جداً)";
+            } else {
+                badge.className = "inline-block px-5 py-2.5 rounded-2xl text-sm font-black bg-amber-100 text-amber-800 border border-amber-300";
+                badge.innerHTML = "🌱 رتبة: خطوة رائعة نحو الاحتراف (تحتاج لمراجعة بسيطة)";
+            }
+
+            playSound('win');
+            startConfetti();
+        }
+
+        function restartGame() {
+            playSound('click');
+            gameState.score = 0;
+            gameState.mcqIndex = 0;
+            gameState.matchingMatchedCount = 0;
+            gameState.matchingSelectedLeft = null;
+            gameState.tfIndex = 0;
+            document.getElementById('scoreDisplay').innerText = '0';
+            startGame();
+        }
+
+        /* ==================== نافذة التغذية الراجعة (Modal) ==================== */
+
+        function showFeedbackModal(isSuccess, title, explanation, nextCallback) {
+            gameState.onModalClose = nextCallback;
+
+            const modal = document.getElementById('feedbackModal');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalExpl = document.getElementById('modalExplanation');
+            const topBar = document.getElementById('modalTopBar');
+            const actionBtn = document.getElementById('modalActionBtn');
+
+            if (isSuccess) {
+                modalIcon.className = "w-20 h-20 rounded-2xl mx-auto flex items-center justify-center text-4xl mb-3 shadow-lg bg-emerald-100 text-emerald-600 border-2 border-emerald-300";
+                modalIcon.innerHTML = "🎉";
+                modalTitle.className = "text-2xl font-black mb-2 text-emerald-700";
+                topBar.className = "h-3 w-full absolute top-0 left-0 bg-gradient-to-r from-emerald-400 to-teal-500";
+                actionBtn.innerText = "متابعة التحدي 🌟";
+                actionBtn.className = "btn-gradient-primary text-white font-extrabold text-base px-8 py-3 rounded-2xl w-full shadow-lg";
+            } else {
+                modalIcon.className = "w-20 h-20 rounded-2xl mx-auto flex items-center justify-center text-4xl mb-3 shadow-lg bg-rose-100 text-rose-600 border-2 border-rose-300";
+                modalIcon.innerHTML = "💡";
+                modalTitle.className = "text-2xl font-black mb-2 text-rose-700";
+                topBar.className = "h-3 w-full absolute top-0 left-0 bg-gradient-to-r from-rose-400 to-pink-500";
+                actionBtn.innerText = "فهمت المعلومة، سأحاول مجدداً 🔄";
+                actionBtn.className = "bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-base px-8 py-3 rounded-2xl w-full transition-all";
+            }
+
+            modalTitle.innerText = title;
+            modalExpl.innerText = explanation;
+            modal.classList.remove('hidden');
+        }
+
+        function closeFeedbackModal() {
+            playSound('click');
+            document.getElementById('feedbackModal').classList.add('hidden');
+            if (typeof gameState.onModalClose === 'function') {
+                const cb = gameState.onModalClose;
+                gameState.onModalClose = null;
+                cb();
+            }
+        }
+
+        /* ==================== مؤثرات الاحتفال (Canvas Confetti) ==================== */
+        function startConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+
+            const particles = [];
+            const colors = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#f43f5e'];
+
+            for (let i = 0; i < 90; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speedY: Math.random() * 3 + 2,
+                    speedX: (Math.random() - 0.5) * 3,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 8
+                });
+            }
+
+            let animationFrame;
+            let counter = 0;
+
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+                    p.rotation += p.rotationSpeed;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+
+                    if (p.y > canvas.height) {
+                        p.y = -10;
+                        p.x = Math.random() * canvas.width;
+                    }
+                });
+
+                counter++;
+                if (counter < 250) {
+                    animationFrame = requestAnimationFrame(animateConfetti);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            animateConfetti();
+        }
+
+        // تفاعل مع تغيير حجم الشاشة لإعادة ضبط الكانفاس
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('confettiCanvas');
+            if (canvas && canvas.parentElement) {
+                canvas.width = canvas.parentElement.offsetWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
+            }
+        });
+    </script>
+</body>
+</html>
